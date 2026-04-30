@@ -1,0 +1,34 @@
+Project sample_project {
+  database_type: 'PostgreSQL'
+  Note: 'Sample e-commerce database schema'
+}
+
+Table users [headercolor: #27AE60] {
+  id integer [primary key, increment]
+  username varchar(50) [not null, unique]
+  email varchar(100) [not null, unique]
+  created_at timestamp [default: `now()`]
+
+  Note: 'User accounts table'
+}
+
+Table orders [headercolor: #3498DB] {
+  id integer [primary key, increment]
+  user_id integer [not null, ref: > users.id]
+  total decimal(10,2) [not null]
+  status varchar(20) [default: 'pending']
+  created_at timestamp [default: `now()`]
+
+  Note: 'Customer orders'
+}
+
+Table order_items {
+  order_id integer [ref: > orders.id]
+  product_id integer [not null]
+  quantity integer [not null]
+  price decimal(10,2) [not null]
+  
+  indexes {
+    (order_id, product_id) [pk]
+  }
+}
