@@ -10,7 +10,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-    ProductDTO createProduct(ProductDTO dto, MultipartFile[] images) throws ProductException, Exception;
+    ProductDTO createProduct(ProductDTO dto) throws ProductException, Exception;
 
     ProductDTO updateProduct(UUID id, ProductDTO dto) throws ProductException, Exception;
 

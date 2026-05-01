@@ -6,10 +6,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
-import java.util.UUID;
+import java.util.*;
 
 import com.saxodevs.pos.exceptions.AppException;
 import com.saxodevs.pos.model.*;
@@ -40,55 +37,43 @@ public class ProductImplementation implements ProductService {
     private final SupplierRepository supplierRepository;
 
     @Override
-    public ProductDTO createProduct(ProductDTO dto, MultipartFile[] images) throws UserException, IOException {
+    public ProductDTO createProduct(ProductDTO dto) throws UserException {
 
-        Product barcode = productRepository.findByBarcode(dto.getBarcode());
+        Product existing = productRepository.findByBarcode(dto.getBarcode());
 
-        if (barcode != null) {
-            throw new AppException("Product barcode already exist!",HttpStatus.BAD_REQUEST);
+        if (existing != null) {
+            throw new AppException("Product barcode already exists!", HttpStatus.BAD_REQUEST);
         }
-
 
         User user = userService.getCurrentUser();
 
-        Category category = categoryRepository.findById(dto.getCategoryId()).orElseThrow(
-                () -> new AppException("Category not found",HttpStatus.NOT_FOUND));
+        Category category = categoryRepository.findById(dto.getCategoryId())
+                .orElseThrow(() -> new AppException("Category not found", HttpStatus.NOT_FOUND));
 
-        Supplier supplier = supplierRepository.findById(dto.getSupplierId()).orElseThrow(
-                () -> new AppException("supplier not found", HttpStatus.NOT_FOUND));
-
+        Supplier supplier = supplierRepository.findById(dto.getSupplierId())
+                .orElseThrow(() -> new AppException("Supplier not found", HttpStatus.NOT_FOUND));
 
         dto.setSku(generator.generate("PRD"));
 
-        Files.createDirectories(Paths.get("uploads/"));
-
-        List<ProductImage> imageList = new ArrayList<>();
-
-
         Product product = ProductMapper.toEntity(dto, user, category, supplier);
 
-
-        for (MultipartFile file : images) {
-
-            String fileName = System.currentTimeMillis() + "_" + Objects.requireNonNull(file.getOriginalFilename()).replaceAll("[^a-zA-Z0-9.\\-]", "_");
-            Path path = Paths.get("uploads/" + fileName);
-            Files.write(path, file.getBytes());
-
-            ProductImage image = new ProductImage();
-            image.setPath(fileName);
-            image.setProduct(product);
-            imageList.add(image);
-        }
+        List<ProductImage> imageList = Optional.ofNullable(dto.getImages())
+                .orElse(List.of())
+                .stream()
+                .map(url -> {
+                    ProductImage img = new ProductImage();
+                    img.setPath(url);
+                    img.setProduct(product);
+                    return img;
+                })
+                .toList();
 
         product.setImages(imageList);
 
+        Product saved = productRepository.save(product);
 
-        Product saveProduct = productRepository.save(product);
-
-        return ProductMapper.toDTO(saveProduct);
-
+        return ProductMapper.toDTO(saved);
     }
-
     @Override
     public ProductDTO updateProduct(UUID id, ProductDTO dto) throws Exception {
 

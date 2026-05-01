@@ -8,7 +8,7 @@ import com.saxodevs.pos.service.ProductService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
-import org.springframework.web.multipart.MultipartFile;
+
 
 import java.util.List;
 import java.util.UUID;
@@ -19,13 +19,13 @@ import java.util.UUID;
 public class ProductController {
     private final ProductService productService;
 
-    @PostMapping(value = "/create", consumes = "multipart/form-data")
+    @PostMapping("/create")
     public ResponseEntity<ProductDTO> create(
-            @RequestPart("product") ProductDTO dto,
-            @RequestPart("images") MultipartFile[] images
+            @RequestBody ProductDTO dto
+
     ) throws Exception {
-        System.out.println("Images count: " + images.length);
-        return ResponseEntity.ok(productService.createProduct(dto, images));
+
+        return ResponseEntity.ok(productService.createProduct(dto));
     }
 
     @PutMapping("/id/{id}")
