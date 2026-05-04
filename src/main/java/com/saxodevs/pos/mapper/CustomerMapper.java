@@ -29,7 +29,7 @@ public class CustomerMapper {
 
     public static Customer toEntity(CustomerDTO dto, User user) {
         return Customer.builder()
-                .isDefault(dto.isDefault())
+                .isDefault(dto.getIsDefault() != null && dto.getIsDefault())
                 .sku(dto.getSku())
                 .firstName(dto.getFirstName())
                 .lastName(dto.getLastName())

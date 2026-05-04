@@ -16,7 +16,7 @@ public class CustomerDTO {
 
     private UUID id;
 
-    private boolean isDefault;
+    private Boolean isDefault;
 
     private String sku;
 
