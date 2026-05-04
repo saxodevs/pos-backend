@@ -38,6 +38,18 @@ public class InventoryImplementation implements InventoryService {
 
     }
 
+    @Override
+    public void reStock(Product product, int quantity) throws Exception {
+        int newStock = product.getStockQuantity() + quantity;
+
+
+
+        product.setStockQuantity(newStock);
+        productRepository.save(product);
+
+        logRepository(product, quantity);
+    }
+
     public void logRepository(Product product, int quantity) {
         InventoryLog inventoryLog = InventoryLog.builder()
                 .product(product)

@@ -5,14 +5,12 @@ import java.util.UUID;
 
 import com.saxodevs.pos.dto.ProductDTO;
 import com.saxodevs.pos.exceptions.ProductException;
-import com.saxodevs.pos.model.Product;
-import org.springframework.web.multipart.MultipartFile;
 
 public interface ProductService {
 
-    ProductDTO createProduct(ProductDTO dto) throws ProductException, Exception;
+    ProductDTO createProduct(ProductDTO dto) throws Exception;
 
-    ProductDTO updateProduct(UUID id, ProductDTO dto) throws ProductException, Exception;
+    ProductDTO updateProduct(UUID id, ProductDTO dto) throws Exception;
 
     ProductDTO adjustStock(UUID id, int qty) throws ProductException;
 
